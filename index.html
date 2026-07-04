@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaming Engine Rekomendasi Berbasis Emosi v2.0</title>
+    <style>
+        :root {
+            --bg-deep: #0b0f19;
+            --bg-card: #151f32;
+            --accent-cyan: #06b6d4;
+            --accent-purple: #8b5cf6;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --border-glow: rgba(6, 182, 212, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .wrapper {
+            max-width: 900px;
+            width: 95%;
+            margin: 20px auto;
+            background: var(--bg-card);
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            background: linear-gradient(to right, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .step-container {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out forwards;
+        }
+
+        .step-container.active {
+            display: block;
+        }
+
+        .grid-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .opt-btn {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: var(--text-main);
+            padding: 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.25s ease;
+        }
+
+        .opt-btn:hover {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 15px var(--border-glow);
+            transform: translateY(-3px);
+        }
+
+        .opt-btn h3 {
+            margin: 0 0 8px 0;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .opt-btn p {
+            margin: 0;
+            font-size: 0.88rem;
+            color: var(--text-sub);
+            line-height: 1.4;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #1e293b;
+            border-radius: 2px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 33%;
+            background: linear-gradient(to right, var(--accent-cyan), var(--accent-purple));
+            transition: width 0.3s ease;
+        }
+
+        /* Results Styling */
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .game-card {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--accent-purple);
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .game-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0;
+        }
+
+        .game-tag {
+            background: rgba(139, 92, 246, 0.15);
+            color: #c084fc;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .match-reason {
+            background: rgba(6, 182, 212, 0.08);
+            border: 1px dashed rgba(6, 182, 212, 0.3);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #67e8f9;
+        }
+
+        .reset-btn {
+            background: linear-gradient(to right, var(--accent-cyan), var(--accent-purple));
+            color: #fff;
+            border: none;
+            padding: 12px 30px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 30px;
+            display: inline-block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    
+    <h1>MindGaming Matcher</h1>
+    <p style="text-align: center; color: var(--text-sub); margin-bottom: 40px;" id="global-sub">Sistem sinkronisasi psikologis untuk memecahkan kejenuhan bermain game.</p>
+
+    <!-- STEP 1: EMOSI UTAMA -->
+    <div class="step-container active" id="step1">
+        <h2 style="text-align: center; margin: 0;">1. Apa poros emosi dominanmu saat ini?</h2>
+        <div class="grid-options">
+            <button class="opt-btn" onclick="selectEmotion('lelah')">
+                <h3>🍂 Lelah / Overwhelmed</h3>
+                <p>Butuh pelarian dari realitas, lelah mental, ingin suasana sunyi atau katarsis emosional.</p>
+            </button>
+            <button class="opt-btn" onclick="selectEmotion('stagnan')">
+                <h3>🔍 Bosan / Stagnan</h3>
+                <p>Ingin distimulasi misteri, kejutan cerita plot-twist, atau sesuatu yang memicu rasa penasaran mendalam.</p>
+            </button>
+            <button class="opt-btn" onclick="selectEmotion('agresif')">
+                <h3>🔥 Frustrasi / Agresif</h3>
+                <p>Penuh energi tertahan, ingin meluapkan amarah, butuh aksi intensif atau tantangan mekanis tinggi.</p>
+            </button>
+            <button class="opt-btn" onclick="selectEmotion('hampa')">
+                <h3>⏳ Hampa / Rindu Konten</h3>
+                <p>Merindukan kehangatan game klasik, interaksi antar karakter yang hidup, atau ekosistem dunia fantasi RPG.</p>
+            </button>
+        </div>
+    </div>
+
+    <!-- STEP 2: TEMPO & DURASI -->
+    <div class="step-container" id="step2">
+        <h2 style="text-align: center; margin: 0;">2. Berapa kapasitas waktu & fokus yang Anda punya?</h2>
+        <div class="grid-options">
+            <button class="opt-btn" onclick="selectPacing('short')">
+                <h3>⚡ Singkat & Padat (Dosis Instan)</h3>
+                <p>Game yang bisa diselesaikan dalam 2-8 jam. Fokus padat, minim grinding, langsung ke inti pengalaman.</p>
+            </button>
+            <button class="opt-btn" onclick="selectPacing('long')">
+                <h3>🌌 Epik & Panjang (Investasi Waktu)</h3>
+                <p>Game berdurasi 20-60+ jam. Dunia masif untuk dijelajahi, perkembangan karakter yang memuaskan jangka panjang.</p>
+            </button>
+        </div>
+    </div>
+
+    <!-- STEP 3: STYLE GAMEPLAY -->
+    <div class="step-container" id="step3">
+        <h2 style="text-align: center; margin: 0;">3. Bagaimana preferensi kontrol mekanikal saat ini?</h2>
+        <div class="grid-options">
+            <button class="opt-btn" onclick="selectStyle('casual')">
+                <h3>☕ Pasif & Atmosferik</h3>
+                <p>Nikmati cerita, atmosfer, keindahan visual, tanpa refleks jempol yang rumit.</p>
+            </button>
+            <button class="opt-btn" onclick="selectStyle('hardcore')">
+                <h3>🎮 Aktif & Taktikal/Mekanis</h3>
+                <p>Butuh koordinasi tangan, taktik, refleks cepat, atau manajemen sistem yang kompleks.</p>
+            </button>
+        </div>
+    </div>
+
+    <!-- STEP 4: HASIL REKOMENDASI -->
+    <div class="step-container" id="step4">
+        <h2>Matriks Terkalibrasi. Coba Mainkan Game Ini:</h2>
+        <div class="results-grid" id="results-target"></div>
+        <button class="reset-btn" onclick="resetEngine()">Kalibrasi Ulang Emosi</button>
+    </div>
+</div>
+
+<script>
+    // Database Matriks 3 Variabel: [Emosi][Pacing][Style]
+    const matrixDatabase = {
+        lelah: {
+            short: {
+                casual: [
+                    { title: "Gris", genre: "Artistic Platformer", desc: "Perjalanan visual tanpa teks mengarungi kedukaan. Sangat damai dan memanjakan estetika visual.", reason: "Menenangkan pikiran yang overstimulated tanpa memberi hukuman game-over." },
+                    { title: "What Remains of Edith Finch", genre: "Walking Simulator / Narrative", desc: "Menjelajahi garis keturunan keluarga yang aneh lewat vignette interaktif pendek.", reason: "Durasi 2 jam yang langsung memikat emosi dan empati Anda secara mendalam." }
+                ],
+                hardcore: [
+                    { title: "Limbo / Inside", genre: "Atmospheric Puzzle-Platformer", desc: "Dunia distopia monokrom berdarah dingin yang sunyi. Membutuhkan ketepatan waktu kontrol.", reason: "Fokus mekanikal yang sunyi membantu mengalihkan pikiran kusut dari dunia nyata." }
+                ]
+            },
+            long: {
+                casual: [
+                    { title: "Stardew Valley", genre: "Farming / Life Sim", desc: "Membangun perkebunan peninggalan kakek dengan ritme harian yang damai.", reason: "Memberikan rasa memegang kendali atas hidup lewat progres mikro yang konsisten." },
+                    { title: "Dave the Diver", genre: "Adventure / Management", desc: "Menyelam menangkap ikan di siang hari dan mengelola restoran sushi yang hangat di malam hari.", reason: "Ritme gameplay berulang yang adiktif tanpa tekanan tingkat kesulitan tinggi." }
+                ],
+                hardcore: [
+                    { title: "Death Stranding", genre: "Sci-Fi Open World Simulation", desc: "Berjalan melintasi lanskap hancur yang megah dan sunyi untuk menghubungkan sisa umat manusia.", reason: "Perjalanan kesepian yang meditatif dikombinasikan dengan manajemen rute logistik yang intens." }
+                ]
+            }
+        },
+        stagnan: {
+            short: {
+                casual: [
+                    { title: "The Stanley Parable", genre: "Surreal / Comedy Narrative", desc: "Eksperimen narasi interaktif yang mendobrak dinding keempat antara pemain dan narator.", reason: "Humor cerdas dan kejutan yang dijamin memecahkan kebosanan pola game konvensional." }
+                ],
+                hardcore: [
+                    { title: "Returnadin (Outer Wilds)", genre: "Space Exploration Mystery", desc: "Sistem tata surya terjebak loop waktu 22 menit. Cari tahu rahasianya murni menggunakan data informasi.", reason: "Memicu dopamin detektif Anda. Kepuasan murni berasal dari pemahaman plot misterinya." }
+                ]
+            },
+            long: {
+                casual: [
+                    { title: "Disco Elysium", genre: "Isometric Detective RPG", desc: "Menjadi detektif amnesia alkoholik di kota distopia yang hancur. Mengandalkan dialog psikologis mendalam.", reason: "Kualitas penulisan cerita terbaik di industri gaming untuk merangsang cara berpikir kritis Anda." }
+                ],
+                hardcore: [
+                    { title: "Persona 5 Royal", genre: "JRPG / Stylized Social Sim", desc: "Menjalani hidup sebagai murid SMA di Tokyo sekaligus pencuri hati nurani penjahat.", reason: "Gaya visual yang sangat trendi, musik jazz memikat, dan plot misteri panjang yang bikin candu." }
+                ]
+            }
+        },
+        agresif: {
+            short: {
+                casual: [
+                    { title: "Hotline Miami", genre: "Top-down Action / Neon Cyberpunk", desc: "Aksi baku hantam cepat dengan musik synthwave agresif. Sekali tertembak mati.", reason: "Meluapkan amarah melalui refleks instan dan ritme musik yang memompa adrenalin." }
+                ],
+                hardcore: [
+                    { title: "DOOM Eternal", genre: "Arena FPS Fast-Paced", desc: "Menghabisi kawanan iblis neraka dengan koreografi senjata berkecepatan tinggi.", reason: "Kombinasi agresi murni dan tuntutan taktis tinggi untuk menguras energi stres Anda." }
+                ]
+            },
+            long: {
+                casual: [
+                    { title: "Monster Hunter: World", genre: "Action RPG Hunt", desc: "Mempelajari ekosistem monster raksasa dan bertarung menggunakan senjata berat yang memuaskan.", reason: "Setiap pertarungan adalah pelampiasan energi yang membutuhkan komitmen posisi taktis." }
+                ],
+                hardcore: [
+                    { title: "Hades", genre: "Rogue-like Action", desc: "Menebas jalan keluar dari neraka mitologi Yunani dengan senjata legendaris.", reason: "Mekanik pertarungan super responsif di mana setiap kematian memicu perkembangan cerita." },
+                    { title: "Elden Ring", genre: "Action Open-World (Soulslike)", desc: "Menjelajahi dunia fantasi gelap yang megah dengan tingkat kesulitan bos yang brutal.", reason: "Menantang ego dan amarah Anda untuk dikonversi menjadi kepuasan kemenangan yang masif." }
+                ]
+            }
+        },
+        hampa: {
+            short: {
+                casual: [
+                    { title: "Sea of Stars", genre: "Modern Retro RPG", desc: "Petualangan turn-based klasik dengan visual piksel modern yang sangat cantik.", reason: "Menyuntikkan rasa hangat nostalgia era Chrono Trigger tanpa mekanik yang ketinggalan zaman." }
+                ],
+                hardcore: [
+                    { title: "Tunic", genre: "Isometric Action Adventure", desc: "Rubah kecil menjelajahi dunia penuh rahasia, membaca buku manual bergaya game jadul (NES).", reason: "Membangkitkan sensasi masa kecil saat membaca buku petunjuk fisik game tanpa arahan penunjuk arah modern." }
+                ]
+            },
+            long: {
+                casual: [
+                    { title: "Radiata Stories", genre: "Classic JRPG (PS2 Era)", desc: "Dunia fantasi di mana Anda bisa merekrut hingga 176 NPC unik yang memiliki jadwal hidup harian sendiri.", reason: "Kehangatan interaksi faksi manusia vs peri serta sistem rekrutmen karakter yang masif dan penuh memori." }
+                ],
+                hardcore: [
+                    { title: "Baldur's Gate 3", genre: "Tactical Turn-Based RPG", desc: "Kebebasan mutlak bermain peran di semesta Dungeons & Dragons dengan pilihan cerita yang bercabang ekstrem.", reason: "Mengisi kekosongan narasi dengan kedalaman hubungan antar karakter yang terasa sangat nyata." }
+                ]
+            }
+        }
+    };
+
+    // State Pengguna
+    let userSelections = { emotion: '', pacing: '', style: '' };
+
+    function selectEmotion(val) {
+        userSelections.emotion = val;
+        switchStep(1, 2, '66%');
+    }
+
+    function selectPacing(val) {
+        userSelections.pacing = val;
+        switchStep(2, 3, '100%');
+    }
+
+    function selectStyle(val) {
+        userSelections.style = val;
+        switchStep(3, 4, '100%');
+        calculateRecommendations();
+    }
+
+    function switchStep(from, to, progressWidth) {
+        document.getElementById(`step${from}`).classList.remove('active');
+        document.getElementById(`step${to}`).classList.add('active');
+        document.getElementById('progress').style.width = progressWidth;
+        if(to === 4) {
+            document.getElementById('global-sub').style.display = 'none';
+        }
+    }
+
+    function calculateRecommendations() {
+        const target = document.getElementById('results-target');
+        target.innerHTML = '';
+
+        const { emotion, pacing, style } = userSelections;
+        
+        // Mengambil array game berdasarkan jalur keputusan
+        let gamesResult = [];
+        try {
+            gamesResult = matrixDatabase[emotion][pacing][style] || [];
+        } catch(e) {
+            gamesResult = [];
+        }
+
+        if(gamesResult.length === 0) {
+            target.innerHTML = '<p style="color: var(--text-sub)">Kombinasi terlalu spesifik, mencoba mencari alternatif terdekat...</p>';
+            return;
+        }
+
+        gamesResult.forEach(game => {
+            const card = document.createElement('div');
+            card.className = 'game-card';
+            card.innerHTML = `
+                <div class="game-header">
+                    <h3 class="game-title">${game.title}</h3>
+                    <span class="game-tag">${game.genre}</span>
+                </div>
+                <p style="margin: 10px 0; color: #cbd5e1; font-size: 0.95rem; line-height: 1.5;">${game.desc}</p>
+                <div class="match-reason">
+                    <strong>Pemicu Emosi:</strong> ${game.reason}
+                </div>
+            `;
+            target.appendChild(card);
+        });
+    }
+
+    function resetEngine() {
+        userSelections = { emotion: '', pacing: '', style: '' };
+        document.getElementById('step4').classList.remove('active');
+        document.getElementById('step1').classList.add('active');
+        document.getElementById('progress').style.width = '33%';
+        document.getElementById('global-sub').style.display = 'block';
+    }
+</script>
+</body>
+</html>
