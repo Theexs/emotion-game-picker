@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gaming Engine Rekomendasi Berbasis Emosi v2.0</title>
+    <title>MindGaming Matcher v3.0 - Terkalibrasi</title>
     <style>
         :root {
             --bg-deep: #0b0f19;
@@ -106,12 +106,11 @@
 
         .progress-fill {
             height: 100%;
-            width: 33%;
+            width: 25%;
             background: linear-gradient(to right, var(--accent-cyan), var(--accent-purple));
             transition: width 0.3s ease;
         }
 
-        /* Results Styling */
         .results-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -197,7 +196,6 @@
     <h1>MindGaming Matcher</h1>
     <p style="text-align: center; color: var(--text-sub); margin-bottom: 40px;" id="global-sub">Sistem sinkronisasi psikologis untuk memecahkan kejenuhan bermain game.</p>
 
-    <!-- STEP 1: EMOSI UTAMA -->
     <div class="step-container active" id="step1">
         <h2 style="text-align: center; margin: 0;">1. Apa poros emosi dominanmu saat ini?</h2>
         <div class="grid-options">
@@ -220,7 +218,6 @@
         </div>
     </div>
 
-    <!-- STEP 2: TEMPO & DURASI -->
     <div class="step-container" id="step2">
         <h2 style="text-align: center; margin: 0;">2. Berapa kapasitas waktu & fokus yang Anda punya?</h2>
         <div class="grid-options">
@@ -235,7 +232,6 @@
         </div>
     </div>
 
-    <!-- STEP 3: STYLE GAMEPLAY -->
     <div class="step-container" id="step3">
         <h2 style="text-align: center; margin: 0;">3. Bagaimana preferensi kontrol mekanikal saat ini?</h2>
         <div class="grid-options">
@@ -250,7 +246,6 @@
         </div>
     </div>
 
-    <!-- STEP 4: HASIL REKOMENDASI -->
     <div class="step-container" id="step4">
         <h2>Matriks Terkalibrasi. Coba Mainkan Game Ini:</h2>
         <div class="results-grid" id="results-target"></div>
@@ -259,96 +254,115 @@
 </div>
 
 <script>
-    // Database Matriks 3 Variabel: [Emosi][Pacing][Style]
+    // Database Diperluas untuk Menunjang Algoritma Pengacakan Dinamis
     const matrixDatabase = {
         lelah: {
             short: {
                 casual: [
                     { title: "Gris", genre: "Artistic Platformer", desc: "Perjalanan visual tanpa teks mengarungi kedukaan. Sangat damai dan memanjakan estetika visual.", reason: "Menenangkan pikiran yang overstimulated tanpa memberi hukuman game-over." },
-                    { title: "What Remains of Edith Finch", genre: "Walking Simulator / Narrative", desc: "Menjelajahi garis keturunan keluarga yang aneh lewat vignette interaktif pendek.", reason: "Durasi 2 jam yang langsung memikat emosi dan empati Anda secara mendalam." }
+                    { title: "What Remains of Edith Finch", genre: "Walking Simulator", desc: "Menjelajahi garis keturunan keluarga yang aneh lewat vignette interaktif pendek.", reason: "Durasi 2 jam yang langsung memikat emosi dan empati Anda secara mendalam." },
+                    { title: "A Short Hike", genre: "Exploration / Cozy", desc: "Mendaki gunung santai di sebuah pulau sebagai burung kecil, berbicara dengan penduduk lokal.", reason: "Kebebasan mutlak tanpa musuh atau batasan waktu, sangat cocok menyembuhkan kepenatan harian." },
+                    { title: "Journey", genre: "Atmospheric Adventure", desc: "Berjalan melintasi gurun pasir misterius yang berkilau menuju gunung di cakrawala.", reason: "Visual minimalis dan alunan musik orkestra yang sangat damai mendetoksifikasi stres pikiran." }
                 ],
                 hardcore: [
-                    { title: "Limbo / Inside", genre: "Atmospheric Puzzle-Platformer", desc: "Dunia distopia monokrom berdarah dingin yang sunyi. Membutuhkan ketepatan waktu kontrol.", reason: "Fokus mekanikal yang sunyi membantu mengalihkan pikiran kusut dari dunia nyata." }
+                    { title: "Limbo", genre: "Puzzle-Platformer", desc: "Dunia monokrom sunyi yang membutuhkan ketepatan waktu kontrol untuk melewati jebakan lingkungan.", reason: "Fokus mekanikal yang sunyi membantu mengalihkan pikiran kusut dari dunia nyata." },
+                    { title: "Inside", genre: "Dystopian Puzzle", desc: "Menyelinap masuk ke dalam fasilitas rahasia gelap sebagai seorang anak di tengah masyarakat yang terhipnotis.", reason: "Atmosfer ketegangan yang konstan memaksa otak Anda fokus penuh ke layar, melupakan kepenatan realitas." },
+                    { title: "Little Nightmares", genre: "Horror Puzzle", desc: "Membantu gadis kecil berjas hujan kuning melarikan diri dari kapal besar berisi monster mengerikan.", reason: "Ketegangan taktis skala kecil yang memuaskan saat Anda berhasil memecahkan rute pelarian." }
                 ]
             },
             long: {
                 casual: [
                     { title: "Stardew Valley", genre: "Farming / Life Sim", desc: "Membangun perkebunan peninggalan kakek dengan ritme harian yang damai.", reason: "Memberikan rasa memegang kendali atas hidup lewat progres mikro yang konsisten." },
-                    { title: "Dave the Diver", genre: "Adventure / Management", desc: "Menyelam menangkap ikan di siang hari dan mengelola restoran sushi yang hangat di malam hari.", reason: "Ritme gameplay berulang yang adiktif tanpa tekanan tingkat kesulitan tinggi." }
+                    { title: "Dave the Diver", genre: "Adventure / Management", desc: "Menyelam menangkap ikan di siang hari dan mengelola restoran sushi yang hangat di malam hari.", reason: "Ritme gameplay berulang yang adiktif tanpa tekanan tingkat kesulitan tinggi." },
+                    { title: "Animal Crossing: New Horizons", genre: "Life Simulation", desc: "Membangun dan mendekorasi pulau pribadi impian Anda bersama para tetangga hewan yang jenaka.", reason: "Game berjalan sesuai jam dunia nyata, mendorong Anda bermain santai tanpa perlu terburu-buru." }
                 ],
                 hardcore: [
-                    { title: "Death Stranding", genre: "Sci-Fi Open World Simulation", desc: "Berjalan melintasi lanskap hancur yang megah dan sunyi untuk menghubungkan sisa umat manusia.", reason: "Perjalanan kesepian yang meditatif dikombinasikan dengan manajemen rute logistik yang intens." }
+                    { title: "Death Stranding", genre: "Sci-Fi Simulation", desc: "Berjalan melintasi lanskap hancur yang megah dan sunyi untuk menghubungkan sisa umat manusia.", reason: "Perjalanan kesepian yang meditatif dikombinasikan dengan manajemen rute logistik yang intens." },
+                    { title: "SnowRunner", genre: "Off-road Driving Sim", desc: "Mengendarai kendaraan berat melewati medan ekstrem berlumpur dan bersalju untuk mengantar kargo.", reason: "Membutuhkan kesabaran tingkat tinggi dan kalkulasi navigasi matang, sangat efektif mematikan distorsi pikiran luar." }
                 ]
             }
         },
         stagnan: {
             short: {
                 casual: [
-                    { title: "The Stanley Parable", genre: "Surreal / Comedy Narrative", desc: "Eksperimen narasi interaktif yang mendobrak dinding keempat antara pemain dan narator.", reason: "Humor cerdas dan kejutan yang dijamin memecahkan kebosanan pola game konvensional." }
+                    { title: "The Stanley Parable", genre: "Surreal Narrative", desc: "Eksperimen narasi interaktif yang mendobrak dinding keempat antara pemain dan narator.", reason: "Humor cerdas dan kejutan yang dijamin memecahkan kebosanan pola game konvensional." },
+                    { title: "Sayonara Wild Hearts", genre: "Pop Album Arcade", desc: "Mengendarai motor, menari, dan bertarung dalam ritme musik pop neon berkecepatan tinggi.", reason: "Ledakan warna dan musik yang menyuntikkan energi kesegaran instan ke mata dan telinga Anda." },
+                    { title: "Superhot", genre: "Innovation FPS", desc: "Game penembak di mana waktu hanya bergerak ketika Anda menggerakkan tubuh.", reason: "Konsep mekanik unik yang memaksa Anda berpikir layaknya koreografer aksi di film fiksi ilmiah." }
                 ],
                 hardcore: [
-                    { title: "Returnadin (Outer Wilds)", genre: "Space Exploration Mystery", desc: "Sistem tata surya terjebak loop waktu 22 menit. Cari tahu rahasianya murni menggunakan data informasi.", reason: "Memicu dopamin detektif Anda. Kepuasan murni berasal dari pemahaman plot misterinya." }
+                    { title: "Outer Wilds", genre: "Space Exploration Mystery", desc: "Sistem tata surya terjebak loop waktu 22 menit. Cari tahu rahasianya murni menggunakan data informasi.", reason: "Memicu dopamin detektif Anda. Kepuasan murni berasal dari pemahaman plot misterinya." },
+                    { title: "Returnal", genre: "Sci-Fi Rogue-like / Shooter", desc: "Terjebak di planet alien yang berubah setiap kali Anda mati, dibalut cerita psikologis yang kelam.", reason: "Tantangan kecepatan refleks tingkat tinggi dipadu cerita misteri tebal yang membuat penasaran." },
+                    { title: "Ghostrunner", genre: "Cyberpunk Action", desc: "Memanjat menara distopia mematikan dengan kemampuan parkour pedang katana satu-kali-pukul-mati.", reason: "Mekanik super intens yang menguji koordinasi mata dan tangan secara presisi tanpa celah bosan." }
                 ]
             },
             long: {
                 casual: [
-                    { title: "Disco Elysium", genre: "Isometric Detective RPG", desc: "Menjadi detektif amnesia alkoholik di kota distopia yang hancur. Mengandalkan dialog psikologis mendalam.", reason: "Kualitas penulisan cerita terbaik di industri gaming untuk merangsang cara berpikir kritis Anda." }
+                    { title: "Disco Elysium", genre: "Detective RPG", desc: "Menjadi detektif amnesia alkoholik di kota distopia yang hancur. Mengandalkan dialog psikologis mendalam.", reason: "Kualitas penulisan cerita terbaik di industri gaming untuk merangsang cara berpikir kritis Anda." },
+                    { title: "The Witness", genre: "Open World Puzzle", desc: "Terdampar di pulau tak berpenghuni yang dipenuhi ratusan panel puzzle garis tersembunyi.", reason: "Melatih logika spasial dan perspektif mata untuk menemukan rahasia yang terintegrasi dengan alam sekitar." }
                 ],
                 hardcore: [
-                    { title: "Persona 5 Royal", genre: "JRPG / Stylized Social Sim", desc: "Menjalani hidup sebagai murid SMA di Tokyo sekaligus pencuri hati nurani penjahat.", reason: "Gaya visual yang sangat trendi, musik jazz memikat, dan plot misteri panjang yang bikin candu." }
+                    { title: "Persona 5 Royal", genre: "JRPG / Social Sim", desc: "Menjalani hidup sebagai murid SMA di Tokyo sekaligus pencuri hati nurani penjahat.", reason: "Gaya visual yang sangat trendi, musik jazz memikat, dan plot misteri panjang yang bikin candu." },
+                    { title: "Cyberpunk 2077", genre: "Open-world Action RPG", desc: "Menjelajahi kota megah Night City sebagai tentara bayaran dengan cip kesadaran rockstar di dalam kepala.", reason: "Konstruksi dunia futuristik masif dengan penulisan misi sampingan yang sangat variatif dan tak terduga." }
                 ]
             }
         },
         agresif: {
             short: {
                 casual: [
-                    { title: "Hotline Miami", genre: "Top-down Action / Neon Cyberpunk", desc: "Aksi baku hantam cepat dengan musik synthwave agresif. Sekali tertembak mati.", reason: "Meluapkan amarah melalui refleks instan dan ritme musik yang memompa adrenalin." }
+                    { title: "Hotline Miami", genre: "Top-down Action", desc: "Aksi baku hantam cepat dengan musik synthwave agresif. Sekali tertembak mati.", reason: "Meluapkan amarah melalui refleks instan dan ritme musik yang memompa adrenalin." },
+                    { title: "My Friend Pedro", genre: "Side-scrolling Shoot 'em up", desc: "Melakukan koreografi tembak-menembak akrobatik lambat atas perintah pisang yang bisa bicara.", reason: "Aksi berantakan yang kreatif, seru, dan penuh gaya tanpa perlu memikirkan plot cerita rumit." }
                 ],
                 hardcore: [
-                    { title: "DOOM Eternal", genre: "Arena FPS Fast-Paced", desc: "Menghabisi kawanan iblis neraka dengan koreografi senjata berkecepatan tinggi.", reason: "Kombinasi agresi murni dan tuntutan taktis tinggi untuk menguras energi stres Anda." }
+                    { title: "DOOM Eternal", genre: "Fast FPS", desc: "Menghabisi kawanan iblis neraka dengan koreografi senjata berkecepatan tinggi.", reason: "Kombinasi agresi murni dan tuntutan taktis tinggi untuk menguras energi stres Anda." },
+                    { title: "Sifu", genre: "Kung-Fu Action", desc: "Misi balas dendam berdarah mengandalkan bela diri otentik, di mana karakter menua setiap kali mati.", reason: "Kepuasan mengeksekusi kombo tangkisan (*parry*) dan pukulan balik yang terasa sangat berdampak." }
                 ]
             },
             long: {
                 casual: [
-                    { title: "Monster Hunter: World", genre: "Action RPG Hunt", desc: "Mempelajari ekosistem monster raksasa dan bertarung menggunakan senjata berat yang memuaskan.", reason: "Setiap pertarungan adalah pelampiasan energi yang membutuhkan komitmen posisi taktis." }
+                    { title: "Monster Hunter: World", genre: "Action RPG", desc: "Mempelajari ekosistem monster raksasa dan bertarung menggunakan senjata berat yang memuaskan.", reason: "Setiap pertarungan adalah pelampiasan energi yang membutuhkan komitmen posisi taktis." },
+                    { title: "Saints Row: The Third", genre: "Open-world Sandbox", desc: "Mengacau di perkotaan menggunakan persenjataan dan kendaraan super konyol tanpa batasan aturan fisik.", reason: "Destruksi murni tanpa beban moral atau cerita berat, efektif melepaskan tekanan emosi." }
                 ],
                 hardcore: [
                     { title: "Hades", genre: "Rogue-like Action", desc: "Menebas jalan keluar dari neraka mitologi Yunani dengan senjata legendaris.", reason: "Mekanik pertarungan super responsif di mana setiap kematian memicu perkembangan cerita." },
-                    { title: "Elden Ring", genre: "Action Open-World (Soulslike)", desc: "Menjelajahi dunia fantasi gelap yang megah dengan tingkat kesulitan bos yang brutal.", reason: "Menantang ego dan amarah Anda untuk dikonversi menjadi kepuasan kemenangan yang masif." }
+                    { title: "Elden Ring", genre: "Action Open-World", desc: "Menjelajahi dunia fantasi gelap yang megah dengan tingkat kesulitan bos yang brutal.", reason: "Menantang ego dan amarah Anda untuk dikonversi menjadi kepuasan kemenangan yang masif." },
+                    { title: "Sekiro: Shadows Die Twice", genre: "Action Adventure", desc: "Menjadi shinobi bertangan satu melewati Jepang kuno fantasi bermodalkan refleks adu pedang presisi.", reason: "Sistem *combat* berbasis ritme dentangan pedang yang memberikan katarsis luar biasa saat menang." }
                 ]
             }
         },
         hampa: {
             short: {
                 casual: [
-                    { title: "Sea of Stars", genre: "Modern Retro RPG", desc: "Petualangan turn-based klasik dengan visual piksel modern yang sangat cantik.", reason: "Menyuntikkan rasa hangat nostalgia era Chrono Trigger tanpa mekanik yang ketinggalan zaman." }
+                    { title: "Sea of Stars", genre: "Modern Retro RPG", desc: "Petualangan turn-based klasik dengan visual piksel modern yang sangat cantik.", reason: "Menyuntikkan rasa hangat nostalgia era Chrono Trigger tanpa mekanik yang ketinggalan zaman." },
+                    { title: "Chrono Trigger", genre: "Classic JRPG", desc: "Menembus ruang dan waktu lintas zaman kuno hingga masa depan untuk menyelamatkan planet.", reason: "Mahakarya RPG legendaris dengan musik ikonik dan jalinan persahabatan karakter yang menyentuh hati." }
                 ],
                 hardcore: [
-                    { title: "Tunic", genre: "Isometric Action Adventure", desc: "Rubah kecil menjelajahi dunia penuh rahasia, membaca buku manual bergaya game jadul (NES).", reason: "Membangkitkan sensasi masa kecil saat membaca buku petunjuk fisik game tanpa arahan penunjuk arah modern." }
+                    { title: "Tunic", genre: "Isometric Action Adventure", desc: "Rubah kecil menjelajahi dunia penuh rahasia, membaca buku manual bergaya game jadul (NES).", reason: "Membangkitkan sensasi masa kecil saat membaca buku petunjuk fisik game tanpa arahan penunjuk arah modern." },
+                    { title: "Hyper Light Drifter", genre: "Action RPG Neon Piksel", desc: "Menjelajahi reruntuhan dunia berteknologi hancur mengandalkan pedang energi berkecepatan tinggi.", reason: "Visual piksel melankolis dipadu tingkat kesulitan tinggi, membangkitkan memori petualangan fajar era 16-bit." }
                 ]
             },
             long: {
                 casual: [
-                    { title: "Radiata Stories", genre: "Classic JRPG (PS2 Era)", desc: "Dunia fantasi di mana Anda bisa merekrut hingga 176 NPC unik yang memiliki jadwal hidup harian sendiri.", reason: "Kehangatan interaksi faksi manusia vs peri serta sistem rekrutmen karakter yang masif dan penuh memori." }
+                    { title: "Radiata Stories", genre: "Classic JRPG", desc: "Dunia fantasi di mana Anda bisa merekrut hingga 176 NPC unik yang memiliki jadwal hidup harian sendiri.", reason: "Kehangatan interaksi faksi manusia vs peri serta sistem rekrutmen karakter yang masif dan penuh memori." },
+                    { title: "Dragon Quest XI S", genre: "Traditional JRPG", desc: "Petualangan epik pahlawan terbuang menyelamatkan dunia dalam format turn-based tradisional yang megah.", reason: "Struktur dongeng fantasi murni yang nyaman, ramah di hati, dan kaya akan pengembangan karakteristik tim." }
                 ],
                 hardcore: [
-                    { title: "Baldur's Gate 3", genre: "Tactical Turn-Based RPG", desc: "Kebebasan mutlak bermain peran di semesta Dungeons & Dragons dengan pilihan cerita yang bercabang ekstrem.", reason: "Mengisi kekosongan narasi dengan kedalaman hubungan antar karakter yang terasa sangat nyata." }
+                    { title: "Baldur's Gate 3", genre: "Tactical Turn-Based RPG", desc: "Kebebasan mutlak bermain peran di semesta Dungeons & Dragons dengan pilihan cerita yang bercabang ekstrem.", reason: "Mengisi kekosongan narasi dengan kedalaman hubungan antar karakter yang terasa sangat nyata." },
+                    { title: "The Witcher 3: Wild Hunt", genre: "Story-rich Action RPG", desc: "Memburu monster dan mencari anak angkat yang hilang di tengah intrik politik dunia fantasi kelam.", reason: "Dunia abu-abu yang matang, penulisan karakter berbobot tinggi, dan ikatan kekeluargaan yang emosional." }
                 ]
             }
         }
     };
 
-    // State Pengguna
     let userSelections = { emotion: '', pacing: '', style: '' };
 
     function selectEmotion(val) {
         userSelections.emotion = val;
-        switchStep(1, 2, '66%');
+        switchStep(1, 2, '50%');
     }
 
     function selectPacing(val) {
         userSelections.pacing = val;
-        switchStep(2, 3, '100%');
+        switchStep(2, 3, '75%');
     }
 
     function selectStyle(val) {
@@ -366,61 +380,57 @@
         }
     }
 
-    // Gantilah fungsi calculateRecommendations() yang lama dengan yang baru ini:
+    function calculateRecommendations() {
+        const target = document.getElementById('results-target');
+        target.innerHTML = '';
 
-function calculateRecommendations() {
-    const target = document.getElementById('results-target');
-    target.innerHTML = '';
+        const { emotion, pacing, style } = userSelections;
+        
+        let gamesResult = [];
+        try {
+            gamesResult = matrixDatabase[emotion][pacing][style] || [];
+        } catch(e) {
+            gamesResult = [];
+        }
 
-    const { emotion, pacing, style } = userSelections;
-    
-    let gamesResult = [];
-    try {
-        gamesResult = matrixDatabase[emotion][pacing][style] || [];
-    } catch(e) {
-        gamesResult = [];
+        if(gamesResult.length === 0) {
+            target.innerHTML = '<p style="color: var(--text-sub)">Kombinasi terlalu spesifik...</p>';
+            return;
+        }
+
+        // --- ALGORITMA PENGACAKAN DINAMIS ---
+        let shuffledGames = [...gamesResult]; 
+        for (let i = shuffledGames.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffledGames[i], shuffledGames[j]] = [shuffledGames[j], shuffledGames[i]];
+        }
+
+        // Menampilkan maksimal 2 game acak per pengujian
+        const maxDisplay = 2;
+        const selectedGames = shuffledGames.slice(0, maxDisplay);
+
+        selectedGames.forEach(game => {
+            const card = document.createElement('div');
+            card.className = 'game-card';
+            card.innerHTML = `
+                <div class="game-header">
+                    <h3 class="game-title">${game.title}</h3>
+                    <span class="game-tag">${game.genre}</span>
+                </div>
+                <p style="margin: 10px 0; color: #cbd5e1; font-size: 0.95rem; line-height: 1.5;">${game.desc}</p>
+                <div class="match-reason">
+                    <strong>Pemicu Emosi:</strong> ${game.reason}
+                </div>
+            `;
+            target.appendChild(card);
+        });
     }
-
-    if(gamesResult.length === 0) {
-        target.innerHTML = '<p style="color: var(--text-sub)">Kombinasi terlalu spesifik...</p>';
-        return;
-    }
-
-    // --- ALGORITMA BARU: PENGACAKAN (FISHER-YATES SHUFFLE) ---
-    // Menyalin data agar tidak merusak database asli
-    let shuffledGames = [...gamesResult]; 
-    for (let i = shuffledGames.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffledGames[i], shuffledGames[j]] = [shuffledGames[j], shuffledGames[i]];
-    }
-
-    // Membatasi tampilan maksimal 2 game saja per klik
-    // Ini menjamin jika Anda klik ulang, kemungkinan besar game yang muncul akan berganti (jika isi database kategori tersebut banyak)
-    const maxDisplay = 2;
-    const selectedGames = shuffledGames.slice(0, maxDisplay);
-
-    selectedGames.forEach(game => {
-        const card = document.createElement('div');
-        card.className = 'game-card';
-        card.innerHTML = `
-            <div class="game-header">
-                <h3 class="game-title">${game.title}</h3>
-                <span class="game-tag">${game.genre}</span>
-            </div>
-            <p style="margin: 10px 0; color: #cbd5e1; font-size: 0.95rem; line-height: 1.5;">${game.desc}</p>
-            <div class="match-reason">
-                <strong>Pemicu Emosi:</strong> ${game.reason}
-            </div>
-        `;
-        target.appendChild(card);
-    });
-}
 
     function resetEngine() {
         userSelections = { emotion: '', pacing: '', style: '' };
         document.getElementById('step4').classList.remove('active');
         document.getElementById('step1').classList.add('active');
-        document.getElementById('progress').style.width = '33%';
+        document.getElementById('progress').style.width = '25%';
         document.getElementById('global-sub').style.display = 'block';
     }
 </script>
