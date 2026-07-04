@@ -366,41 +366,55 @@
         }
     }
 
-    function calculateRecommendations() {
-        const target = document.getElementById('results-target');
-        target.innerHTML = '';
+    // Gantilah fungsi calculateRecommendations() yang lama dengan yang baru ini:
 
-        const { emotion, pacing, style } = userSelections;
-        
-        // Mengambil array game berdasarkan jalur keputusan
-        let gamesResult = [];
-        try {
-            gamesResult = matrixDatabase[emotion][pacing][style] || [];
-        } catch(e) {
-            gamesResult = [];
-        }
+function calculateRecommendations() {
+    const target = document.getElementById('results-target');
+    target.innerHTML = '';
 
-        if(gamesResult.length === 0) {
-            target.innerHTML = '<p style="color: var(--text-sub)">Kombinasi terlalu spesifik, mencoba mencari alternatif terdekat...</p>';
-            return;
-        }
-
-        gamesResult.forEach(game => {
-            const card = document.createElement('div');
-            card.className = 'game-card';
-            card.innerHTML = `
-                <div class="game-header">
-                    <h3 class="game-title">${game.title}</h3>
-                    <span class="game-tag">${game.genre}</span>
-                </div>
-                <p style="margin: 10px 0; color: #cbd5e1; font-size: 0.95rem; line-height: 1.5;">${game.desc}</p>
-                <div class="match-reason">
-                    <strong>Pemicu Emosi:</strong> ${game.reason}
-                </div>
-            `;
-            target.appendChild(card);
-        });
+    const { emotion, pacing, style } = userSelections;
+    
+    let gamesResult = [];
+    try {
+        gamesResult = matrixDatabase[emotion][pacing][style] || [];
+    } catch(e) {
+        gamesResult = [];
     }
+
+    if(gamesResult.length === 0) {
+        target.innerHTML = '<p style="color: var(--text-sub)">Kombinasi terlalu spesifik...</p>';
+        return;
+    }
+
+    // --- ALGORITMA BARU: PENGACAKAN (FISHER-YATES SHUFFLE) ---
+    // Menyalin data agar tidak merusak database asli
+    let shuffledGames = [...gamesResult]; 
+    for (let i = shuffledGames.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledGames[i], shuffledGames[j]] = [shuffledGames[j], shuffledGames[i]];
+    }
+
+    // Membatasi tampilan maksimal 2 game saja per klik
+    // Ini menjamin jika Anda klik ulang, kemungkinan besar game yang muncul akan berganti (jika isi database kategori tersebut banyak)
+    const maxDisplay = 2;
+    const selectedGames = shuffledGames.slice(0, maxDisplay);
+
+    selectedGames.forEach(game => {
+        const card = document.createElement('div');
+        card.className = 'game-card';
+        card.innerHTML = `
+            <div class="game-header">
+                <h3 class="game-title">${game.title}</h3>
+                <span class="game-tag">${game.genre}</span>
+            </div>
+            <p style="margin: 10px 0; color: #cbd5e1; font-size: 0.95rem; line-height: 1.5;">${game.desc}</p>
+            <div class="match-reason">
+                <strong>Pemicu Emosi:</strong> ${game.reason}
+            </div>
+        `;
+        target.appendChild(card);
+    });
+}
 
     function resetEngine() {
         userSelections = { emotion: '', pacing: '', style: '' };
